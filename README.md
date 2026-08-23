@@ -1,67 +1,35 @@
-# Flannel Daddy Theme Tester
+# Flannel Daddy Theme Tester V2
 
-Automated Playwright regression tests for the Flannel Daddy Shopify theme.
+V2 improves the original Shopify regression suite by making the checks behave more like a real shopper.
 
-## V1 coverage
+## V2 fixes
 
-- Homepage health
-- Desktop and mobile Chromium
-- Three-level navigation text
-- Mens flannels collection
-- Empty collection vs. true 404 detection
-- Sample of internal homepage links
-- Broken images
-- Product-page add-to-cart UI presence
-- Horizontal overflow checks
-- Failure screenshots, traces, video, HTML report, and JUnit output
+- Opens the mobile menu before checking navigation.
+- Opens or hovers `Mens`, then `Flannels`, before checking vendor links.
+- Verifies Clutch & Throttle, Divided Flannel, and Hales only after the nested menu is opened.
+- Verifies vendor links have non-empty destinations.
+- Excludes `/account` from generic link checks because Shopify may return 406 to automated account requests.
+- Reduces link-check volume and adds delays to avoid Shopify 429 rate limiting.
+- Treats 429 responses as rate-limit events, not broken links.
+- Keeps screenshots, traces, and videos on failures.
+- Uses Node 24 in GitHub Actions to remove the Node 20 deprecation warning.
 
-## Current preview URL
+## Target
 
-`https://pnvm7fr2pdb6t14j-68906025043.shopifypreview.com`
+Keep the GitHub Actions secret:
 
-For GitHub Actions, create a repository secret named `SHOPIFY_PREVIEW_URL` and paste the current Shopify theme preview URL as its value.
+`SHOPIFY_PREVIEW_URL`
 
-## Local setup
+set to:
 
-```bash
-npm install
-npx playwright install chromium
-npm test
-```
+`https://flanneldaddyloot.com`
 
-To view the HTML report:
+until we have a stable remote staging target.
 
-```bash
-npm run report
-```
+## Run
 
-## GitHub setup
+From GitHub:
 
-Upload this project into the root of:
+**Actions → Shopify Theme Regression Tests → Run workflow**
 
-`chaoticnacho/flannel-daddy-theme-tester`
-
-Then go to:
-
-**Repository → Settings → Secrets and variables → Actions → New repository secret**
-
-Create:
-
-- Name: `SHOPIFY_PREVIEW_URL`
-- Value: `https://pnvm7fr2pdb6t14j-68906025043.shopifypreview.com`
-
-The tests run on pushes and pull requests to `main`, and can also be started manually from the Actions tab.
-
-## Next expansion
-
-After the GitHub connection is working again, V2 should add exact theme selectors for:
-- opening desktop nested menus
-- opening mobile drawer nested menus
-- clicking each vendor link
-- selecting variants
-- true add-to-cart execution
-- cart quantity/remove checks
-- search
-- footer/legal links
-- accessibility checks
-- visual regression snapshots
+If a test fails, download the `playwright-report` or `test-results` artifact from the run.
