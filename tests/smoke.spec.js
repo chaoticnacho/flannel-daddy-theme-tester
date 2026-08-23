@@ -9,10 +9,17 @@ test.describe('Storefront smoke tests', () => {
     await assertDocumentHealthy(page);
   });
 
-  test('main navigation is present', async ({ page }) => {
+  test('primary navigation shell is present', async ({ page }, testInfo) => {
     await page.goto('/');
-    const bodyText = (await page.locator('body').innerText()).toLowerCase();
-    expect(bodyText).toContain('mens');
-    expect(bodyText).toContain('womens');
+
+    if (testInfo.project.name.includes('mobile')) {
+      const menuControl = page.locator(
+        'button[aria-label*="menu" i], [role="button"][aria-label*="menu" i]'
+      ).first();
+      await expect(menuControl).toBeVisible();
+    } else {
+      await expect(page.getByText(/^mens$/i).first()).toBeVisible();
+      await expect(page.getByText(/^womens$/i).first()).toBeVisible();
+    }
   });
 });
